@@ -16,16 +16,17 @@ var io = socketIO(server)
 io.on('connection', (socket) => {
     console.log('new user connected')
 
-    socket.emit('newEmail',{
+    socket.emit('newMessage',{
         from: 'jaap@kan',
-        text: 'bla bla bluh'
+        text: 'bla bla bluh',
+        createdAt: 42342342
     })
     socket.on('disconnect', () => {
         console.log('client disconnected')
     })
 
-    socket.on('createEmail',(email) => {
-        console.log(email)
+    socket.on('createMessage',(msg) => {
+        console.log(msg)
     })
 })
 
