@@ -15,8 +15,17 @@ var io = socketIO(server)
 
 io.on('connection', (socket) => {
     console.log('new user connected')
+
+    socket.emit('newEmail',{
+        from: 'jaap@kan',
+        text: 'bla bla bluh'
+    })
     socket.on('disconnect', () => {
         console.log('client disconnected')
+    })
+
+    socket.on('createEmail',(email) => {
+        console.log(email)
     })
 })
 
