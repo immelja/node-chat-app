@@ -16,17 +16,22 @@ var io = socketIO(server)
 io.on('connection', (socket) => {
     console.log('new user connected')
 
-    socket.emit('newMessage',{
-        from: 'jaap@kan',
-        text: 'bla bla bluh',
-        createdAt: 42342342
-    })
+    // socket.emit('newMessage',{
+    //     from: 'jaap@kan',
+    //     text: 'bla bla bluh',
+    //     createdAt: 42342342
+    // })
     socket.on('disconnect', () => {
         console.log('client disconnected')
     })
 
     socket.on('createMessage',(msg) => {
         console.log(msg)
+        io.emit('newMessage', {
+            from: msg.from,
+            text: msg.text,
+            createdAt: new Date().getTime()
+        })
     })
 })
 
