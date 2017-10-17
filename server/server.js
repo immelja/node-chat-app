@@ -6,7 +6,7 @@ const socketIO = require('socket.io')
 const publicPath = path.join(__dirname,'../public')
 const port = process.env.PORT || 3000
 
-const {generateMessage} = require('./utils/message')
+const {generateMessage,generateLocationMessage} = require('./utils/message')
 
 console.log(__dirname + '/../public')
 console.log(publicPath)
@@ -33,9 +33,15 @@ io.on('connection', (socket) => {
 
     socket.on('createMessage',(msg,callback) => {
         console.log(msg)
-        socket.broadcast.emit('newMessage', generateMessage(msg.from,msg.text))
+        io.emit('newMessage', generateMessage(msg.from,msg.text))
         callback('acknowledged from server')
     })
+
+    socket.on('createLocationMessage', (coords) => {
+        console.log('new location msg')
+        io.emit('newLocationMessage', generateLocationMessage('Admin',coords.latitude, coords.longitude))
+    })
+    
 })
 
 app.use(express.static(publicPath))
