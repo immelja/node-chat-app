@@ -27,14 +27,14 @@ io.on('connection', (socket) => {
         console.log('client disconnected')
     })
 
-    socket.emit('newMessage', generateMessage('Admin','Welcome to the chat aapp'))
+    socket.emit('newMessage', generateMessage('Admin','Welcome to the chat app'))
 
     socket.broadcast.emit('newMessage', generateMessage('Admin','New user joined'))
 
     socket.on('createMessage',(msg,callback) => {
         console.log(msg)
         io.emit('newMessage', generateMessage(msg.from,msg.text))
-        callback('acknowledged from server')
+        callback()
     })
 
     socket.on('createLocationMessage', (coords) => {
