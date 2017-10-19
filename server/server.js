@@ -3,10 +3,11 @@ const http = require('http')
 const express = require('express')
 const socketIO = require('socket.io')
 
-const publicPath = path.join(__dirname,'../public')
+const publicPath = path.join(__dirname, '../public')
 const port = process.env.PORT || 3000
 
-const {generateMessage,generateLocationMessage} = require('./utils/message')
+const { generateMessage, generateLocationMessage } = require('./utils/message')
+const { isRealString } = require('./utils/validation')
 
 console.log(__dirname + '/../public')
 console.log(publicPath)
@@ -23,25 +24,30 @@ io.on('connection', (socket) => {
     //     text: 'bla bla bluh',
     //     createdAt: 42342342
     // })
+    socket.on('join', (params, callback) => {
+        if (!isRealString(params.name) || !isRealString(params.room)) {
+            callback('Name and Room Name are required')
+        }
+        socket.join(params.room)
+        socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'))
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} joined`))
+        callback()
+    })
     socket.on('disconnect', () => {
         console.log('client disconnected')
     })
 
-    socket.emit('newMessage', generateMessage('Admin','Welcome to the chat app'))
-
-    socket.broadcast.emit('newMessage', generateMessage('Admin','New user joined'))
-
-    socket.on('createMessage',(msg,callback) => {
+    socket.on('createMessage', (msg, callback) => {
         console.log(msg)
-        io.emit('newMessage', generateMessage(msg.from,msg.text))
+        io.emit('newMessage', generateMessage(msg.from, msg.text))
         callback()
     })
 
     socket.on('createLocationMessage', (coords) => {
         console.log('new location msg')
-        io.emit('newLocationMessage', generateLocationMessage('Admin',coords.latitude, coords.longitude))
+        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
     })
-    
+
 })
 
 app.use(express.static(publicPath))
